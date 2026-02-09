@@ -1,12 +1,26 @@
-const express = require("express");
+import express from "express";
+import { config } from "dotenv";
+
+// Load environment variables first
+config();
+
+import { connectDB } from "./config/db.js";
+
 const app = express()
 const PORT = 5001;
 
+//Import Routes
+import movieRoutes from "./routes/movieRoutes.js"
 
-app.get("/hello", (req,res)=> {
-    res.json({message: "Hello World"})
-})
+//API routes
+app.use("/movies",movieRoutes)
 
-const server = app.listen(PORT, () => {
-    console.log(`Server is runnig on PORT ${PORT}`)
-})
+// Connect to database and start server
+connectDB().then(() => {
+    const server = app.listen(PORT, () => {
+        console.log(`Server is running on PORT ${PORT}`)
+    })
+}).catch((error) => {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+});
